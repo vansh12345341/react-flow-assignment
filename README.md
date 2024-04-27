@@ -1,5 +1,12 @@
 # Workflow Builder and Runner
 The Workflow Builder and Runner is a React-based web application that allows users to visually create and execute workflows. This tool offers an intuitive drag-and-drop interface for building workflows and a simple execution environment where users can upload files to run through their configured workflows.
+Sample screen:
+![image](https://github.com/vansh12345341/react-flow-assignment/assets/57994031/0cea302c-b387-4f09-8712-078d027a88be)
+![image](https://github.com/vansh12345341/react-flow-assignment/assets/57994031/1e9ca34f-23e6-4a67-a793-b8f60aa16019)
+![image](https://github.com/vansh12345341/react-flow-assignment/assets/57994031/8bda0b1c-fc90-4e20-8a14-ee2eb579af88)
+
+
+
 
 # Features
 Workflow Builder: Create workflows by dragging and dropping nodes that represent different operations or tasks.

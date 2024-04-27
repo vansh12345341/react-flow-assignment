@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef ,useMemo} from 'react';
-import api from './api';
+import axios from 'axios';
 import ReactFlow, {
   addEdge,
   Controls,
@@ -108,9 +108,7 @@ const WorkflowBuilder = () => {
 
   
 
-  const nodeTypes = useMemo(() => ({
-    customNode: (nodeData) => <CustomNodeComponent {...nodeData} />,
-  }), []); 
+ 
 
   const onDragStart = (event, nodeType) => {
     event.dataTransfer.setData('application/reactflow', nodeType);
@@ -120,9 +118,9 @@ const WorkflowBuilder = () => {
   const onSaveWorkflow = useCallback(async () => {
     if (reactFlowInstance) {
       const flow = reactFlowInstance.toObject();
-
+      console.log("flow", flow)
       try {
-        const response = await api.post('/workflows', flow);
+        const response = await axios.post('https://react-flow-server.onrender.com/workflows', flow);
         alert(`Workflow saved! ID: ${response.data.id}`);
       } catch (error) {
         console.error('Error saving workflow:', error);

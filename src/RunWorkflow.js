@@ -8,13 +8,13 @@ import { createGlobalStyle } from 'styled-components';
 
 const GlobalStyle = createGlobalStyle`
   body {
-    font-family: 'Roboto', sans-serif; // Setting a more modern font
+    font-family: 'Roboto', sans-serif; 
   }
 `;
 
 const Container = styled.div`
   padding: 40px;
-  background-color: #f0f2f5; // Updated background color
+  background-color: #f0f2f5; 
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -25,7 +25,7 @@ const Container = styled.div`
 const FileUploadArea = styled.div`
   border: dashed 2px #007bff;
   padding: 30px;
-  width: 80%; // Control width to better suit various screens
+  width: 80%; 
   text-align: center;
   margin-bottom: 30px;
   cursor: pointer;
@@ -36,7 +36,7 @@ const FileUploadArea = styled.div`
   gap: 20px;
   &:hover {
     border-color: #0056b3;
-    background-color: #e7f0fd; // Light background on hover for better feedback
+    background-color: #e7f0fd; 
   }
 `;
 

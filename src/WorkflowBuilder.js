@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef ,useMemo} from 'react';
-import axios from 'axios';
+import api from './api';
 import ReactFlow, {
   addEdge,
   Controls,
@@ -12,10 +12,9 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import styled from 'styled-components';
 
-// Updated styles to include a delete button in nodes
 const Sidebar = styled.aside`
   width: 250px;
-  height: calc(100vh - 45px); // Adjust height for navigation bar
+  height: calc(100vh - 45px); 
   position: absolute;
   top: 45px;
   left: 0;
@@ -59,7 +58,7 @@ const SaveButton = styled.button`
 `;
 
 
-const CustomNodeComponent = ({ id, data, onDelete }) => {
+const CustomNodeComponent = ({ id, data }) => {
   return (
     <div style={{ background: '#fff', padding: '10px', border: '1px solid #ddd', position: 'relative' }}>
       <Handle type="target" position="top" style={{ borderRadius: 0 }} />
@@ -123,7 +122,7 @@ const WorkflowBuilder = () => {
       const flow = reactFlowInstance.toObject();
 
       try {
-        const response = await axios.post('http://localhost:3001/workflows', flow);
+        const response = await api.post('/workflows', flow);
         alert(`Workflow saved! ID: ${response.data.id}`);
       } catch (error) {
         console.error('Error saving workflow:', error);

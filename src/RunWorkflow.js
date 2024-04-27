@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import axios from 'axios';
 import styled from 'styled-components';
+import api from './api';
+import WorkflowModal from './WorkflowModal';
 
-// Adding Google Fonts
 import { createGlobalStyle } from 'styled-components';
+
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -81,17 +82,21 @@ const RunButton = styled(StyledButton)`
 `;
 
 
+
 const RunWorkflow = () => {
   const [selectedWorkflow, setSelectedWorkflow] = useState('');
   const [uploadedFile, setUploadedFile] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [showModal, setShowModal] = useState(false);
   const [fileName, setFileName] = useState('');
+
   const [workflowOptions, setWorkflowOptions] = useState([]);
   const fileInputRef = useRef();
-
   useEffect(() => {
     const fetchWorkflowIds = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/getworkflows');
+        const response = await api.get('/getworkflows');
         setWorkflowOptions(response.data);
       } catch (error) {
         console.error('Error fetching workflow IDs:', error);
@@ -105,70 +110,80 @@ const RunWorkflow = () => {
     const file = e.target.files[0];
     if (file) {
       setUploadedFile(file);
-      setFileName(file.name); // Set the file name when file is selected
+      setFileName(file.name); 
     }
   };
 
   const handleRemoveFile = () => {
     setUploadedFile(null);
     setFileName('');
-    fileInputRef.current.value = ''; // Reset file input
+    fileInputRef.current.value = ''; 
   };
 
   const handleRunWorkflow = async () => {
-    if (!uploadedFile ) {
+    if (!uploadedFile || !selectedWorkflow) {
       alert('Please upload a file and select a workflow.');
       return;
     }
-   console.log(uploadedFile, selectedWorkflow)
     const formData = new FormData();
     formData.append('fileData', uploadedFile);
     formData.append('workflowId', selectedWorkflow);
     
     try {
-      const response = await axios.post('http://localhost:3001/execute', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'  
-      }
-    });
-      alert('Workflow executed successfully');
+      setIsProcessing(true);
+      const response = await api.post('/execute', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+      });
+      setModalMessage('Workflow executed successfully');
+      setShowModal(true);
+      setIsProcessing(false);
     } catch (error) {
-      console.error('Error running workflow:', error);
-      alert('Failed to execute workflow.');
+      setIsProcessing(false);
+      setModalMessage(`Error running workflow: ${error.message}`);
+      setShowModal(true);
     }
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
   };
 
   return (
     <>
-    <GlobalStyle />
-    <Container>
-      <FileUploadArea onClick={() => fileInputRef.current.click()}>
-        <input
-          ref={fileInputRef}
-          type="file"
-          onChange={handleFileChange}
-          style={{ display: 'none' }}
-        />
-        <StyledButton>Click to upload a file here</StyledButton>
-        {fileName && (
-          <>
-            <FileName>{fileName}</FileName>
-            <StyledButton onClick={handleRemoveFile}>&times;</StyledButton>
-          </>
-        )}
-      </FileUploadArea>
+      <GlobalStyle />
+      <Container>
+        <FileUploadArea onClick={() => fileInputRef.current.click()}>
+          <input
+            ref={fileInputRef}
+            type="file"
+            onChange={handleFileChange}
+            style={{ display: 'none' }}
+          />
+          <StyledButton>Click to upload a file here</StyledButton>
+          {fileName && (
+            <>
+              <FileName>{fileName}</FileName>
+              <StyledButton onClick={handleRemoveFile}>&times;</StyledButton>
+            </>
+          )}
+        </FileUploadArea>
 
-      <WorkflowSelect
-        value={selectedWorkflow}
-        onChange={(e) => setSelectedWorkflow(e.target.value)}
-      >
-        {workflowOptions.map((option) => (
-          <option key={option.id} value={option.id}>{option.id}</option>
-        ))}
-      </WorkflowSelect>
-      <RunButton onClick={handleRunWorkflow}>Run Workflow</RunButton>
-    </Container>
-  </>
+        <WorkflowSelect
+          value={selectedWorkflow}
+          onChange={(e) => setSelectedWorkflow(e.target.value)}
+        >
+          {workflowOptions.map((option) => (
+            <option key={option.id} value={option.id}>{option.id}</option>
+          ))}
+        </WorkflowSelect>
+        <RunButton onClick={handleRunWorkflow}>
+          {isProcessing ?  'Processing' : 'Run Workflow'}
+        </RunButton>
+      </Container>
+      {showModal && <WorkflowModal message={modalMessage} onClose={closeModal} />}
+    </>
   )
 };
 
